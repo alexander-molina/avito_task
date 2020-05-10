@@ -1,3 +1,3 @@
-module github.com/avito_task
+module github.com/alexander-molina/avito_task
 
 go 1.13

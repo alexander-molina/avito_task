@@ -1,6 +1,10 @@
 .PHONY: build
 build: 
-	go build -v .
+	go build -v ./cmd/avitotask
+
+.PHONY: run
+run:
+	go run ./cmd/avitotask/main.go
 
 .PHONY: test
 test: 
