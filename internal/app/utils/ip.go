@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"strings"
 )
 
 const (
@@ -15,7 +14,6 @@ const (
 const (
 	OK                = -1
 	UknownIPError int = iota
-	WrongMaskPrefix
 	NotIPv4
 )
 
@@ -37,8 +35,8 @@ func NewIPError(code int, err error) *IPError {
 		text = err.Error()
 	} else {
 		switch code {
-		case WrongMaskPrefix:
-			text = "Wrong mask prefix. Must be /24"
+		case UknownIPError:
+			text = "Unknown error"
 		case NotIPv4:
 			text = "Provided ip address is not a valid IPv4 address"
 		}
@@ -52,22 +50,8 @@ func NewIPError(code int, err error) *IPError {
 // Default mask is 255.255.255.0 .
 // If ip addres does not contain mask prefix: it will be set to default mask
 func ExtractSubnet(IPAddr string) (string, error) {
-	// checking prefix
-	i := strings.Index(IPAddr, "/")
-	var addr string
-	if i < 0 {
-		addr = IPAddr
-		IPAddr += "/" + maskBytesLen
-	} else {
-		if mask := IPAddr[i+1:]; mask != maskBytesLen {
-			err := NewIPError(WrongMaskPrefix, nil)
-			log.Println(err)
-			return "", err
-		}
-		addr = IPAddr[:i]
-	}
-
-	IP := net.ParseIP(addr)
+	IP := net.ParseIP(IPAddr)
+	IPAddr += "/" + maskBytesLen
 
 	// Checking if ip is IPv4. IPv6 is not permitted
 	if IP == nil || IP.To4() == nil {

@@ -18,9 +18,7 @@ type data struct {
 func Test_ExtractSubnet(t *testing.T) {
 	var testData = [...]data{
 		{"127.0.0.1", "127.0.0.0/24", utils.OK, "Correct IPv4 address"},
-		{"127.0.0.1/24", "127.0.0.0/24", utils.OK, "Correct IPv4 address"},
-		{"127.0.0.1/20", "", utils.WrongMaskPrefix, "Correct IPv4 address"},
-		{"127.0.0.1/a", "", utils.WrongMaskPrefix, "Correct IPv4 address"},
+		{"127.0.0.1/24", "", utils.NotIPv4, "IPv4 address contains mask prefix"},
 		{"wrong", "", utils.NotIPv4, "Incorrect IPv4 address"},
 		{"2001:0db8:85a3:0000:0000:8a2e:0370:7334", "", utils.NotIPv4, "Incorrect IPv4 address"},
 	}

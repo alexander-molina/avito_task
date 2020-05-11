@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/alexander-molina/avito_task/internal/app/utils"
 )
@@ -18,13 +19,14 @@ func main() {
 }
 
 func handleRequest(w http.ResponseWriter, r *http.Request) {
-	IPAddr := r.Header.Get("X-Forwarded-For")
-	if IPAddr == "" {
+	addresses := r.Header.Get("X-Forwarded-For")
+	IPAddr := strings.Split(addresses, ",")
+	if IPAddr[0] == "" {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("Header 'X-Forwarded-For' is not set\n"))
 		return
 	}
-	subnet, err := utils.ExtractSubnet(IPAddr)
+	subnet, err := utils.ExtractSubnet(IPAddr[0])
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte(err.Error()))
