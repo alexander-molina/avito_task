@@ -45,10 +45,7 @@ func NewIPError(code int, err error) *IPError {
 	return &IPError{code, text}
 }
 
-// ExtractSubnet validate IPv4 and extract subnet.
-// Only ip addresses with default mask are permitted.
-// Default mask is 255.255.255.0 .
-// If ip addres does not contain mask prefix: it will be set to default mask
+// ExtractSubnet validate IPv4 and extract subnet using mask 255.255.255.0.
 func ExtractSubnet(IPAddr string) (string, error) {
 	IP := net.ParseIP(IPAddr)
 	IPAddr += "/" + maskBytesLen

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/alexander-molina/avito_task/internal/app/utils"
+	"github.com/alexander-molina/avito_task/internal/app/api/utils"
 )
 
 type data struct {
