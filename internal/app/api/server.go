@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/alexander-molina/avito_task/internal/app/api/utils"
 )
 
 const (
@@ -33,17 +35,19 @@ func handleRequest(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Header 'X-Forwarded-For' error\n"))
 		return
 	}
-	// subnet, err := utils.ExtractSubnet(IPAddr[0])
-	// if err != nil {
-	// 	w.WriteHeader(http.StatusBadRequest)
-	// 	w.Write([]byte(err.Error()))
-	// }
+	subnet, err := utils.ExtractSubnet(IPAddr[0])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
+	}
 
-	// p := utils.Limit(strings.Split(subnet, "/")[0])
-	// if !p {
-	// 	http.Error(w, http.StatusText(http.StatusTooManyRequests), http.StatusTooManyRequests)
-	// 	return
-	// }
+	limiter := utils.GetLimiter()
+
+	p := limiter.AllowRequests(subnet)
+	if !p {
+		http.Error(w, http.StatusText(http.StatusTooManyRequests), http.StatusTooManyRequests)
+		return
+	}
 	w.Write([]byte("OK\n"))
 	return
 }
@@ -69,4 +73,20 @@ func handleLimitsReset(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+
+	var subnets []string
+
+	for _, a := range msg.Addresses {
+		s, err := utils.ExtractSubnet(a)
+		if err != nil {
+			continue
+		}
+		subnets = append(subnets, s)
+	}
+
+	limiter := utils.GetLimiter()
+	limiter.ResetTrackers(subnets)
+
+	w.Write([]byte("OK\n"))
+	return
 }

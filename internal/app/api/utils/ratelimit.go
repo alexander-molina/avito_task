@@ -77,6 +77,16 @@ func (r *RateLimiter) AllowRequests(address string) bool {
 	return true
 }
 
+// ResetTrackers delete tracker for requested addresses
+func (r *RateLimiter) ResetTrackers(addresses []string) {
+	r.mux.Lock()
+	defer r.mux.Unlock()
+
+	for _, a := range addresses {
+		delete(r.trackers, a)
+	}
+}
+
 // creates a correctly initialized tracker
 func newTracker() *addressTracker {
 	return &addressTracker{

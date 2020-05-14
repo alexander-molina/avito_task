@@ -41,6 +41,18 @@ func TestRateLimit_MultipleAddressesBlock(t *testing.T) {
 			t.Errorf("Requests blocked for iteration %d. Address: %s", i, "127.0.0.1/24")
 		}
 	}
+
+	for i := 0; i < 200; i++ {
+		p := limiter.AllowRequests("127.0.0.5/24")
+		if i < 100 && !p {
+			t.Errorf("Requests blocked for iteration %d. Address: %s", i, "127.0.0.5/24")
+		}
+
+		if i >= 100 && p {
+			t.Errorf("Requests not blocked for iteration %d. Address: %s", i, "127.0.0.5/24")
+		}
+
+	}
 }
 
 func TestRateLimit_BlockTimeExpires(t *testing.T) {
@@ -55,6 +67,26 @@ func TestRateLimit_BlockTimeExpires(t *testing.T) {
 		if i >= 100 && p {
 			t.Errorf("Requests not blocked for iteration %d. Address: %s", i, "127.0.0.1/24")
 		}
+	}
+}
 
+func TestRateLimit_ResetTrackers(t *testing.T) {
+	limiter := utils.GetLimiter()
+	for i := 0; i < 200; i++ {
+		limiter.AllowRequests("127.0.0.1/24")
+	}
+
+	addresses := []string{"127.0.0.3/24", "127.0.0.1/24"}
+	limiter.ResetTrackers(addresses)
+
+	for i := 0; i < 200; i++ {
+		p := limiter.AllowRequests("127.0.0.1/24")
+		if i < 100 && !p {
+			t.Errorf("Requests blocked for iteration %d. Address: %s", i, "127.0.0.1/24")
+		}
+
+		if i >= 100 && p {
+			t.Errorf("Requests not blocked for iteration %d. Address: %s", i, "127.0.0.1/24")
+		}
 	}
 }
