@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net"
-)
 
-const (
-	maskBytesLen = "24"
+	"github.com/alexander-molina/avito_task/internal/app/config"
 )
 
 // Error codes
@@ -47,8 +45,10 @@ func NewIPError(code int, err error) *IPError {
 
 // ExtractSubnet validate IPv4 and extract subnet using mask 255.255.255.0.
 func ExtractSubnet(IPAddr string) (string, error) {
+	appConfig := config.GetConfig()
+
 	IP := net.ParseIP(IPAddr)
-	IPAddr += "/" + maskBytesLen
+	IPAddr += "/" + appConfig.SubnetPrefixSize
 
 	// Checking if ip is IPv4. IPv6 is not permitted
 	if IP == nil || IP.To4() == nil {

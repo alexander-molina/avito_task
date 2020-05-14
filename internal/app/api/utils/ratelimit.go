@@ -3,6 +3,12 @@ package utils
 import (
 	"sync"
 	"time"
+
+	"github.com/alexander-molina/avito_task/internal/app/config"
+)
+
+var (
+	trackingTimeLimit time.Duration = time.Minute
 )
 
 func init() {
@@ -11,12 +17,6 @@ func init() {
 		mux:      &sync.RWMutex{},
 	}
 }
-
-const (
-	maxRequests       int           = 100
-	trackingTimeLimit time.Duration = time.Minute
-	blockTime         time.Duration = time.Minute * 2
-)
 
 var (
 	// Limiter global rate limiter
@@ -44,6 +44,7 @@ func GetLimiter() *RateLimiter {
 // AllowRequests check if current address has reached request limit.
 // If not return true, else return false
 func (r *RateLimiter) AllowRequests(address string) bool {
+	appConfig := config.GetConfig()
 	r.mux.Lock()
 	defer r.mux.Unlock()
 	tracker, ok := r.trackers[address]
@@ -65,8 +66,8 @@ func (r *RateLimiter) AllowRequests(address string) bool {
 		return false
 	}
 
-	if tracker.requestCount >= maxRequests {
-		tracker.blockedUntil = time.Now().Add(blockTime)
+	if tracker.requestCount >= appConfig.ReqestLimit {
+		tracker.blockedUntil = time.Now().Add(appConfig.BlockTime)
 		r.trackers[address] = tracker
 		return false
 	}
