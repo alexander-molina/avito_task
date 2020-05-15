@@ -3,5 +3,7 @@ services:
     build:
       context: .
     image: avito_task
+    ports:
+      - "8000:8000"
 
 version: "3.7"
