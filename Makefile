@@ -4,7 +4,7 @@ install:
 
 .PHONY: build
 build: 
-	go install ./cmd/avitotask
+	go build ./cmd/avitotask
 
 .PHONY: run
 run:
