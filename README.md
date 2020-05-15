@@ -1,6 +1,6 @@
 # antibot-developer-trainee
 
-My implementation for https://github.com/avito-tech/antibot-developer-trainee
+My implementation for github.com/avito-tech/antibot-developer-trainee
 
 ## Work locally
 
