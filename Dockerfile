@@ -5,5 +5,5 @@ COPY go.mod go.sum ./
 RUN mkdir cmd && mkdir internal
 COPY ./cmd  ./cmd
 COPY ./internal ./internal
-RUN go install ./cmd/avitotask
+RUN go install ./cmd/avitotask && rm -rf /app
 CMD ["avitotask"]
