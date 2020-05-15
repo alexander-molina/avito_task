@@ -5,5 +5,10 @@ services:
     image: avito_task
     ports:
       - "8000:8000"
+    environment:
+      PORT: 8000
+      PREFIX_SIZE: 24
+      REQUEST_LIMIT: 100
+      BLOCK_TIME: 2
 
 version: "3.7"

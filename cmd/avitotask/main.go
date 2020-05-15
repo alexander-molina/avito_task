@@ -1,7 +1,7 @@
 package main
 
 import (
-	"flag"
+	"os"
 	"strconv"
 	"time"
 
@@ -9,26 +9,35 @@ import (
 	"github.com/alexander-molina/avito_task/internal/app/config"
 )
 
-var (
-	subnetPrefixSize int
-	reqestLimit      int
-	blockTime        int
-)
+func main() {
+	port, exists := os.LookupEnv("PORT")
+	if !exists {
+		port = "8000"
+	}
 
-func init() {
-	flag.IntVar(&subnetPrefixSize, "p", 24, "The size of subnet prefix the server will work with")
-	flag.IntVar(&reqestLimit, "r", 100, "Quantity of maximum permitted requests per tme period")
-	flag.IntVar(&blockTime, "b", 2, "Duration of block period (in minutes)")
-	flag.Parse()
+	subnetPrefixSize, exists := os.LookupEnv("PREFIX_SIZE")
+	if !exists {
+		subnetPrefixSize = "24"
+	}
+
+	reqestLimit, exists := os.LookupEnv("REQUEST_LIMIT")
+	if !exists {
+		reqestLimit = "100"
+	}
+
+	blockTime, exists := os.LookupEnv("BLOCK_TIME")
+	if !exists {
+		blockTime = "2"
+	}
 
 	appConfig := config.GetConfig()
-	appConfig.SubnetPrefixSize = strconv.Itoa(subnetPrefixSize)
-	appConfig.ReqestLimit = reqestLimit
-	appConfig.BlockTime = time.Minute * time.Duration(blockTime)
+
+	appConfig.SubnetPrefixSize = subnetPrefixSize
+	appConfig.ReqestLimit, _ = strconv.Atoi(reqestLimit)
+	t, _ := time.ParseDuration(blockTime + "m")
+	appConfig.BlockTime = time.Minute * t
 
 	config.SetConfig(appConfig)
-}
 
-func main() {
-	api.StartServer()
+	api.StartServer(":" + port)
 }

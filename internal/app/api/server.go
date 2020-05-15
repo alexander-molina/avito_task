@@ -10,21 +10,17 @@ import (
 	"github.com/alexander-molina/avito_task/internal/app/api/utils"
 )
 
-const (
-	serverPort = ":8000"
-)
-
 type limitsResetBody struct {
 	Addresses []string `json:"addresses"`
 }
 
 // StartServer ...
-func StartServer() {
-	log.Printf("Listening on %s\n", serverPort)
+func StartServer(port string) {
+	log.Printf("Listening on %s\n", port)
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handleRequest)
 	mux.HandleFunc("/limits/reset", handleLimitsReset)
-	http.ListenAndServe(serverPort, mux)
+	http.ListenAndServe(port, mux)
 }
 
 func handleRequest(w http.ResponseWriter, r *http.Request) {
