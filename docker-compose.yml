@@ -1,0 +1,7 @@
+services:
+  app:
+    build:
+      context: .
+    image: avito_task
+
+version: "3.7"
